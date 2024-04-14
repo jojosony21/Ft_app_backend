@@ -17,8 +17,8 @@ const ChemicalSchema = new mongoose.Schema({
     chemicalname: { type: String, required: true },
     addquantity: { type: Number, required: true },
     expirydate: { type: Date,required:true},
-    sellername:{type:String},
-    sellernum:{type:String},
+    sellername: { type: String, required: true },
+    sellernum: { type: Number, required: true },
 },
 {
     collection: "Chemical"
