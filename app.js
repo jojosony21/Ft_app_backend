@@ -343,7 +343,7 @@ app.post('/add-experiment', async (req, res) => {
 
 //update chemical stock
 
-app.put('/update-chemical', async (req, res) => {
+app.post('/update-chemical', async (req, res) => {
     const { chemicalname, addquantity, expirydate, sellername, sellernum } = req.body;
 
    
