@@ -210,7 +210,7 @@ app.post('/add-chemical', async (req, res) => {
         const { chemicalname, addquantity, expirydate, sellername, sellernum } = req.body;
 
         // Check if any of the required fields are empty
-        if (!chemicalname || !addquantity || !expirydate) {
+        if (!chemicalname || !addquantity || !expirydate || !sellername || !sellernum){
             return res.status(400).json({ status: "fail", data: 'Chemical name, quantity, and expiry date are required' });
         }
 
