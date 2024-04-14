@@ -251,7 +251,7 @@ cron.schedule('0 0 * * *', async () => {
          }
  });
 
- app.post('/add-reagent', async (req, res) => {
+app.post('/add-reagent', async (req, res) => {
     const { reagentname, chemicals } = req.body;
 
     try {
@@ -292,7 +292,7 @@ cron.schedule('0 0 * * *', async () => {
 
         res.status(201).send({ status: 'ok', data: newReagent });
     } catch (error) {
-        console.log('Error adding reagent:');
+        console.error('Error adding reagent:', error);
         res.status(500).send({ status: 'fail', data: 'Internal server error' });
     }
 });
