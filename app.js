@@ -259,6 +259,11 @@ cron.schedule('0 0 * * *', async () => {
         if (!reagentname || !chemicals || chemicals.length === 0) {
             return res.status(400).send({ status: 'fail', data: 'Reagent name and at least one chemical are required' });
         }
+        // Check if the reagent with the same name already exists
+        const existingReagent = await Reagent.findOne({ reagentname });
+        if (existingReagent) {
+            return res.status(400).send({ status: 'fail', data: 'Reagent with this name already exists' });
+        }
 
         const chemicalObjects = [];
         let totalReagentQuantity = 0; // Total quantity of the reagent
