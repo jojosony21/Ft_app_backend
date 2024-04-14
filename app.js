@@ -342,20 +342,19 @@ app.post('/add-experiment', async (req, res) => {
 
 //update chemical stock
 
-app.put('/update-chemical/:chemicalname', async (req, res) => {
-    const chemicalname = req.params.chemicalname;
-    const { addquantity, expirydate, sellername, sellernum } = req.body;
+app.post('/update-chemical', async (req, res) => {
+    const { chemicalname, addquantity, expirydate, sellername, sellernum } = req.body;
 
     try {
         // Find the existing chemical by its name
         const existingChemical = await Chemical.findOne({ chemicalname });
 
         if (!existingChemical) {
-            return res.status(404).send({ status:'fail',data:'Chemical not found' });
+            return res.status(404).send({ status: 'fail', data: 'Chemical not found' });
         }
 
         // Update the fields with new data
-        existingChemical.addquantity += addquantity; // Assuming addquantity is a number
+        existingChemical.addquantity += addquantity; 
         existingChemical.expirydate = expirydate;
         existingChemical.sellername = sellername;
         existingChemical.sellernum = sellernum;
@@ -366,7 +365,7 @@ app.put('/update-chemical/:chemicalname', async (req, res) => {
         res.status(200).send({ status: 'ok', data: { chemical: existingChemical } });
     } catch (error) {
         console.error('Error updating chemical:', error);
-        res.status(500).send({ status:'fail',data: 'Internal server error' });
+        res.status(500).send({ status: 'fail', data: 'Internal server error' });
     }
 });
 
