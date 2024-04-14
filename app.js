@@ -345,41 +345,35 @@ app.post('/add-experiment', async (req, res) => {
 app.post('/update-chemical', async (req, res) => {
     const { chemicalname, addquantity, expirydate, sellername, sellernum } = req.body;
 
+   
+    if (!chemicalname || !addquantity || !expirydate || !sellername || !sellernum) {
+        return res.status(400).send({ status: 'fail', data: 'Missing or null values in request body' });
+    }
+
     try {
-        // Find the existing chemical by its name
+      
         const existingChemical = await Chemical.findOne({ chemicalname });
 
         if (!existingChemical) {
             return res.status(404).send({ status: 'fail', data: 'Chemical not found' });
         }
 
-        // Update the fields with new data
         existingChemical.addquantity += addquantity; 
         existingChemical.expirydate = expirydate;
         existingChemical.sellername = sellername;
         existingChemical.sellernum = sellernum;
 
-        // Save the updated chemical
+        
         await existingChemical.save();
 
-        res.status(200).send({ status: 'ok', data: { chemical: existingChemical } });
+        res.status(200).send({ status: 'ok' ,data: 'update successfull'});
     } catch (error) {
         console.error('Error updating chemical:', error);
-        res.status(500).send({ status: 'fail', data: 'Internal server error' });
+        res.status(500).send({ status: 'fail', data: error });
     }
 });
 
-app.get('/chemicals', async (req, res) => {
-    try {
-        // Fetch all chemicals from the database and project only the chemicalname field
-        const chemicals = await Chemical.find({}, 'chemicalname');
 
-        res.status(200).send({ status: 'ok', data: { chemicals } });
-    } catch (error) {
-        console.error('Error fetching chemicals:', error);
-        res.status(500).send({ status:'fail',data: 'Internal server error' });
-    }
-});
 
 
 
