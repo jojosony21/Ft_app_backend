@@ -31,6 +31,7 @@ mongoose.connect(mongourl).then(()=>{
  const Chemical=mongoose.model( "Chemical" );
  const Reagent=mongoose.model("Reagent");
  const Experiment = mongoose.model('Experiment');
+ const UsageHistory = mongoose.model('UsageHistory');
 
 
 
