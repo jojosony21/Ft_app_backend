@@ -370,7 +370,7 @@ app.post('/update-chemical', async (req, res) => {
         res.status(200).send({ status: 'ok' ,data: 'update successfull'});
     } catch (error) {
         console.error('Error updating chemical:', error);
-        res.status(500).send({ status: 'fail', data: error });
+        res.status(500).send({ status: 'fail', data: 'internal server error' });
     }
 });
 
