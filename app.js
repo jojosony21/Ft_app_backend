@@ -276,11 +276,11 @@ app.post('/add-reagent', async (req, res) => {
             // Push the chemical object to the array
             chemicalObjects.push({
                 chemicalname: chemical.chemicalname,
-                quantity: chemical.quantity
+                quantity: chemical.addquantity
             });
 
             // Add the quantity of the chemical to the total reagent quantity
-            totalReagentQuantity += chemical.quantity;
+            totalReagentQuantity += chemical.addquantity;
         }
 
         // Create the reagent document
@@ -317,11 +317,11 @@ app.post('/add-experiment', async (req, res) => {
         const newExperiment = new Experiment({
             name,
             chemicalsUsed: chemicalsUsed.map(chemical => ({
-                name: chemical.name,
-                quantity: chemical.quantity || 0 // Set quantity to 0 if not provided
+                name: chemical.chemicalname,
+                quantity: chemical.addquantity || 0 // Set quantity to 0 if not provided
             })),
             reagentsUsed: reagentsUsed.map(reagent => ({
-                name: reagent.name,
+                name: reagent.reagentname,
                 quantity: reagent.quantity || 0 // Set quantity to 0 if not provided
             }))
         });
