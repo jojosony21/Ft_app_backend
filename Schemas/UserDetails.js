@@ -56,3 +56,30 @@ const experimentSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model('Experiment', experimentSchema);
+//usage history schema
+
+
+const usageHistorySchema = new mongoose.Schema({
+    chemicalname: {
+        type: String,
+        required: true
+    },
+    quantity: {
+        type: Number,
+        required: true
+    },
+    batch: {
+        type: String,
+        required: true
+    },
+    date: {
+        type: Date,
+        default: Date.now
+    },
+    remark: String
+});
+
+const UsageHistory = mongoose.model('UsageHistory', usageHistorySchema);
+
+module.exports = UsageHistory;
+
