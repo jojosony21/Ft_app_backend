@@ -288,7 +288,7 @@ app.post('/add-reagent', async (req, res) => {
         let totalReagentQuantity = 0; // Total quantity of the reagent
 
         for (const chemical of chemicals) {
-            if (!chemical.chemicalname || !chemical.quantity) {
+            if (!chemical.chemicalname || !chemical.addquantity) {
                 return res.status(400).send({ status: 'fail', data: 'Chemical name and quantity are required' });
             }
 
