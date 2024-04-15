@@ -25,7 +25,7 @@ const ChemicalSchema = new mongoose.Schema({
                     .then(chemical => !chemical); // Returns true if chemical name does not exist
             },
             message: props => `${props.value} already exists!`
-        }
+        },
     addquantity: { type: Number, required: true },
     expirydate: { type: Date,required:true},
     sellername: { type: String },
