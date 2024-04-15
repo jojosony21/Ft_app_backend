@@ -45,8 +45,8 @@ app.post('/register', async (req, res) => {
     const { username, email, password } = req.body;
 
     // Check if password is provided
-    if (!password) {
-        return res.status(400).send({status:"error",data:"incorrect password" });
+    if (!password || !username || !email) {
+        return res.status(400).send({status:"error",data:"fill the fields" });
     }
 
     try {
