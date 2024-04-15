@@ -336,11 +336,11 @@ app.post('/add-experiment', async (req, res) => {
         const newExperiment = new Experiment({
             name,
             chemicalsUsed: chemicalsUsed.map(chemical => ({
-                name: chemical.chemicalname,
+                chemicalName: chemical.chemicalname,
                 quantity: chemical.addquantity || 0 // Set quantity to 0 if not provided
             })),
             reagentsUsed: reagentsUsed.map(reagent => ({
-                name: reagent.reagentname,
+                reagentName: reagent.reagentname,
                 quantity: reagent.quantity || 0 // Set quantity to 0 if not provided
             }))
         });
