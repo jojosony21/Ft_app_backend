@@ -554,6 +554,18 @@ app.post('/use-chemical', async (req, res) => {
 //display chemicals
 app.get('/chemicals', async (req, res) => {
     try {
+        // Fetch all chemicals from the database and project only the chemicalname field
+        const chemicals = await Chemical.find({}, 'chemicalname');
+
+        res.status(200).send({ status: 'ok', data: { chemicals } });
+    } catch (error) {
+        console.error('Error fetching chemicals:', error);
+        res.status(500).send({ status:'fail',data: 'Internal server error' });
+    }
+});
+
+app.get('/avialablestock', async (req, res) => {
+    try {
         
         const chemicals = await Chemical.find({}, 'chemicalname addquantity expirydate');
 
