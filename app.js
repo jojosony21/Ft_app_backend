@@ -524,7 +524,18 @@ app.post('/use-chemical', async (req, res) => {
 //use reagent
 //use experiment
 //usage history
+//display chemicals
+app.get('/chemicals', async (req, res) => {
+    try {
+        
+        const chemicals = await Chemical.find({}, 'chemicalname addquantity expirydate');
 
+        res.status(200).send({ status: 'ok', data: { chemicals } });
+    } catch (error) {
+        console.error('Error fetching chemicals:', error);
+        res.status(500).send({ error: 'Internal server error' });
+    }
+});
 
 
 
