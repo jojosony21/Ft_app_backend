@@ -576,7 +576,15 @@ app.get('/avialablestock', async (req, res) => {
     }
 });
 
-
+app.post('/chemical-usage-history', async (req, res) => {
+    try {
+        const usageHistory = await ChemicalUsage.find();
+        res.status(200).json({ status: 'success', data: usageHistory });
+    } catch (error) {
+        console.error('Error fetching chemical usage history:', error);
+        res.status(500).json({ status: 'error', message: 'Internal server error' });
+    }
+});
 
 
 app.listen(5001,()=>{
