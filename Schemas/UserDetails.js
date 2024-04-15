@@ -62,23 +62,30 @@ module.exports = mongoose.model('Experiment', experimentSchema);
 
 
 const chemicalUsageSchema = new mongoose.Schema({
-    chemicalname: {
-        type: String,
-        required: true
-    },
-    quantity: {
-        type: Number,
-        required: true
-    },
-    batch: {
-        type: String,
-        required: true
-    },
-    date: {
-        type: Date,
-        default: Date.now
-    },
-    remark: String
+  chemicalname: {
+    type: String,
+    required: true,
+  },
+  quantity: {
+    type: Number,
+    required: true,
+  },
+  batch: {
+    type: String,
+    required: true,
+  },
+  date: {
+    type: Date,
+    default: Date.now,
+  },
+  usedAs: {
+    type: String,
+    required: true,
+  },
+  name: {
+    type: String,
+  },
+  remark: String,
 });
 
 const ChemicalUsage = mongoose.model('ChemicalUsage', chemicalUsageSchema);
