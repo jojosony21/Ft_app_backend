@@ -504,49 +504,50 @@ app.post('/chemicals/search', async (req, res) => {
 });
 
 // Route to use a chemical by name
-app.post('/use-chemical', async (req, res) => {
-    const { chemicalname, quantity, batch, date, remark } = req.body;
-        // Check if the date format is valid using moment.js
-        if (!moment(date, 'DD-MM-YYYY', true).isValid()) {
-        return res.status(400).send({ status: 'fail', data: 'Invalid date format, please use DD-MM-YYYY' });
-        }
-    try {
-        // Find the chemical by name
-        const chemical = await Chemical.findOne({ chemicalname });
+app.post("/use-chemical", async (req, res) => {
+  const { chemicalname, quantity, batch, date, remark } = req.body;
 
-        // Check if the chemical exists
-        if (!chemical) {
-            return res.status(404).json({ status: 'fail', data: 'Chemical not found' });
-        }
+  try {
+    // Find the chemical by name
+    const chemical = await Chemical.findOne({ chemicalname });
 
-        // Check if there is enough quantity of the chemical available
-        if (chemical.addquantity < quantity) {
-            return res.status(400).json({ status: 'fail', data: 'Not enough quantity of the chemical available' });
-        }
-
-        // Update the quantity of the chemical
-        chemical.addquantity -= quantity;
-
-        // Save the updated chemical
-        await chemical.save();
-
-        // Create a new usage history entry
-        const usageHistoryEntry = new ChemicalUsage({
-            chemicalname,
-            quantity,
-            batch,
-            date,
-            remark
-        });
-
-        // Save the usage history entry
-        await usageHistoryEntry.save();
-
-        res.status(200).json({ status: 'success', data: { chemical, usageHistoryEntry } });
-    } catch (error) {
-        console.error('Error using chemical:', error);
-        res.status(500).json({ status: 'fail', data: 'Internal server error' });
+    // Check if the chemical exists
+    if (!chemical) {
+      return res
+        .status(404)
+        .json({ status: "fail", data: "Chemical not found" });
     }
+
+    // Check if there is enough quantity of the chemical available
+    if (chemical.addquantity < quantity) {
+      return res.status(400).json({
+        status: "fail",
+        data: "Not enough quantity of the chemical available",
+      });
+    }
+
+    chemical.addquantity -= quantity;
+
+    const chemicalUsageSchema = new ChemicalUsage({
+      chemicalname,
+      quantity: quantity,
+      batch,
+      date,
+      remark,
+      usedAs: "Chemical",
+      name: "chemical",
+    });
+
+    await chemicalUsageSchema.save();
+    await chemical.save();
+
+    // Create a new usage history entry
+
+    res.status(200).json({ status: "success", data: { chemical } });
+  } catch (error) {
+    console.error("Error using chemical:", error);
+    res.status(500).json({ status: "fail", data: "Internal server error" });
+  }
 });
 
 
