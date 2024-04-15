@@ -59,7 +59,7 @@ module.exports = mongoose.model('Experiment', experimentSchema);
 //usage history schema
 
 
-const usageHistorySchema = new mongoose.Schema({
+const chemicalUsageSchema = new mongoose.Schema({
     chemicalname: {
         type: String,
         required: true
@@ -79,7 +79,7 @@ const usageHistorySchema = new mongoose.Schema({
     remark: String
 });
 
-const UsageHistory = mongoose.model('UsageHistory', usageHistorySchema);
+const ChemicalUsage = mongoose.model('ChemicalUsage', chemicalUsageSchema);
 
-module.exports = UsageHistory;
+module.exports = ChemicalUsage;
 
