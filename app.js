@@ -32,6 +32,8 @@ mongoose.connect(mongourl).then(()=>{
  const Reagent=mongoose.model("Reagent");
  const Experiment = mongoose.model('Experiment');
  const ChemicalUsage = mongoose.model('ChemicalUsage');
+ const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+ const moment = require('moment');
 
 
 
@@ -47,6 +49,10 @@ app.post('/register', async (req, res) => {
     // Check if password is provided
     if (!password || !username || !email) {
         return res.status(400).send({status:"error",data:"fill the fields" });
+    }
+    // Check if email is valid
+    if (!emailRegex.test(email)) {
+        return res.status(400).send({ status: "error", data: "Invalid email address" });
     }
 
     try {
@@ -74,7 +80,10 @@ app.post('/register', async (req, res) => {
 
 app.post("/login-user", async (req, res) => {
     const { email, password } = req.body;
-
+    // Check if email is valid
+    if (!emailRegex.test(email)) {
+        return res.status(400).send({ status: "error", data: "Invalid email address" });
+    }
     try {
         const oldUser = await User.findOne({ email: email });
 
@@ -106,7 +115,10 @@ app.post("/login-user", async (req, res) => {
 app.post('/forgotpass', async (req, res) => {
     try {
         const { email } = req.body;
-
+        // Check if email is valid
+        if (!emailRegex.test(email)) {
+        return res.status(400).send({ status: "error", data: "Invalid email address" });
+        }
         
         const user = await User.findOne({ email });
         if (!user) {
@@ -160,7 +172,10 @@ app.post('/forgotpass', async (req, res) => {
 app.post('/resetpass', async (req, res) => {
     try {
         const { email, otp, newPassword } = req.body;
-
+        // Check if email is valid
+        if (!emailRegex.test(email)) {
+        return res.status(400).send({ status: "error", data: "Invalid email address" });
+        }
         
         const user = await User.findOne({ email });
 
@@ -213,7 +228,10 @@ app.post('/add-chemical', async (req, res) => {
         if (!chemicalname || !addquantity || !expirydate || !sellername || !sellernum){
             return res.status(400).json({ status: "fail", data: 'Chemical name, quantity, and expiry date are required' });
         }
-
+        // Check if the date format is valid using moment.js
+        if (!moment(expirydate, 'DD-MM-YYYY', true).isValid()) {
+        return res.status(400).send({ status: 'fail', data: 'Invalid date format, please use DD-MM-YYYY' });
+        }
         // Check if a chemical with the same name already exists
         const existingChemical = await Chemical.findOne({ chemicalname: chemicalname });
         if (existingChemical) {
@@ -349,6 +367,10 @@ app.post('/update-chemical', async (req, res) => {
    
     if (!chemicalname || !addquantity || !expirydate || !sellername || !sellernum) {
         return res.status(400).send({ status: 'fail', data: 'Missing or null values in request body' });
+    }
+    // Check if the date format is valid using moment.js
+    if (!moment(expirydate, 'DD-MM-YYYY', true).isValid()) {
+        return res.status(400).send({ status: 'fail', data: 'Invalid date format, please use DD-MM-YYYY' });
     }
 
     try {
