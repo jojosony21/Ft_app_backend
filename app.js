@@ -860,6 +860,23 @@ app.get("/recently-used-chemicals", async (req, res) => {
       res.status(500).json({ status: "fail", data: "Internal server error" });
     }
   });
+  app.get("/recently-used-reagents", async (req, res) => {
+    try {
+      // Fetch the 3 most recent reagent usage entries sorted by date in descending order
+      const recentReagents = await ChemicalUsage.find({ usedAs: "Reagent" })
+        .sort({ date: -1 })
+        .limit(3)
+        .select("chemicalname -_id"); // Exclude the _id field from the response
+  
+      // Extract only the reagent names from the fetched data
+      const reagentNames = recentReagents.map((reagent) => reagent.chemicalname);
+  
+      res.status(200).json({ status: "success", data: reagentNames });
+    } catch (error) {
+      console.error("Error fetching recently used reagents:", error);
+      res.status(500).json({ status: "fail", data: "Internal server error" });
+    }
+  });
 
 app.listen(5001, () => {
   console.log("Node js server started.");
