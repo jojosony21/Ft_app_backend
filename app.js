@@ -377,7 +377,7 @@ app.post("/add-experiment", async (req, res) => {
       name,
       chemicalsUsed: chemicalsUsed.map((chemical) => ({
         chemicalName: chemical.chemicalname,
-        quantity: chemical.addquantity || 0, // Set quantity to 0 if not provided
+        quantity: chemical.quantity || 0, // Set quantity to 0 if not provided
       })),
       reagentsUsed: reagentsUsed.map((reagent) => ({
         reagentName: reagent.reagentname,
