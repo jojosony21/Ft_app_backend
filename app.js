@@ -460,8 +460,9 @@ app.get('/chemical-reagent-experiment', async (req, res) => {
 
 
 // Route for filtered search by chemical name
-app.get('/chemicals/search', async (req, res) => {
-    const { name } = req.query;
+// Assuming you are using Express.js
+app.post('/chemicals/search', async (req, res) => {
+    const { name } = req.body;
 
     try {
         // Build the filter based on the provided name
@@ -479,6 +480,7 @@ app.get('/chemicals/search', async (req, res) => {
         res.status(500).send({ error: 'Internal server error' });
     }
 });
+
 // Route to use a chemical by name
 app.post('/use-chemical', async (req, res) => {
     const { chemicalname, quantity, batch, date, remark } = req.body;
