@@ -843,6 +843,23 @@ app.post("/chemical-usage-history", async (req, res) => {
     res.status(500).json({ status: "error", message: "Internal server error" });
   }
 });
+app.get("/recently-used-chemicals", async (req, res) => {
+    try {
+      // Fetch the 3 most recent chemical usage entries sorted by date in descending order
+      const recentChemicals = await ChemicalUsage.find({ usedAs: "Chemical" })
+        .sort({ date: -1 })
+        .limit(3)
+        .select("chemicalname");
+  
+      // Extract only the chemical names from the fetched data
+      const chemicalNames = recentChemicals.map((chemical) => chemical.chemicalname);
+  
+      res.status(200).json({ status: "success", data: chemicalNames });
+    } catch (error) {
+      console.error("Error fetching recently used chemicals:", error);
+      res.status(500).json({ status: "fail", data: "Internal server error" });
+    }
+  });
 
 app.listen(5001, () => {
   console.log("Node js server started.");
