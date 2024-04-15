@@ -31,7 +31,7 @@ mongoose.connect(mongourl).then(()=>{
  const Chemical=mongoose.model( "Chemical" );
  const Reagent=mongoose.model("Reagent");
  const Experiment = mongoose.model('Experiment');
- const UsageHistory = mongoose.model('UsageHistory');
+ const ChemicalUsage = mongoose.model('ChemicalUsage');
 
 
 
@@ -506,7 +506,7 @@ app.post('/use-chemical', async (req, res) => {
         await chemical.save();
 
         // Create a new usage history entry
-        const usageHistoryEntry = new UsageHistory({
+        const usageHistoryEntry = new ChemicalUsage({
             chemicalname,
             quantity,
             batch,
