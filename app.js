@@ -414,6 +414,32 @@ app.get('/experiments', async (req, res) => {
         res.status(500).json({ status: 'error', message: 'Internal server error' });
     }
 });
+
+//Get a single experiment by name
+app.post("/getexperiment", async (req, res) => {
+  try {
+    const { expname } = req.body;
+
+    // Find the experiment by name
+    const experiment = await Experiment.findOne({
+      name: expname,
+    });
+
+    if (!experiment) {
+      return res
+        .status(404)
+        .json({ status: "fail", message: "Experiment not found" });
+    }
+
+    // If found, return the experiment data
+    res.json({ status: "ok", experiment });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ status: "fail", message: "Internal server error" });
+  }
+});
+
+
 app.get('/reagents', async (req, res) => {
     try {
         // Query the database for all reagents and select only the reagentname field
