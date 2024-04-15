@@ -16,17 +16,7 @@ mongoose.model("UserInfo", UserDetailSchema)
 const ChemicalSchema = new mongoose.Schema({
    chemicalname: { 
         type: String, 
-        required: true,
-        lowercase: true,
-        validate: {
-            validator: function(v) {
-                // Check if the chemical name exists in the database ignoring case
-                return this.constructor.findOne({ chemicalname: v.toLowerCase() })
-                    .then(chemical => !chemical); // Returns true if chemical name does not exist
-            },
-            message: props => `${props.value} already exists!`
-        }
-   },
+        required: true},
     addquantity: { type: Number, required: true },
     expirydate: { type: Date,required:true},
     sellername: { type: String },
