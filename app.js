@@ -506,7 +506,10 @@ app.post('/chemicals/search', async (req, res) => {
 // Route to use a chemical by name
 app.post('/use-chemical', async (req, res) => {
     const { chemicalname, quantity, batch, date, remark } = req.body;
-
+        // Check if the date format is valid using moment.js
+        if (!moment(date, 'DD-MM-YYYY', true).isValid()) {
+        return res.status(400).send({ status: 'fail', data: 'Invalid date format, please use DD-MM-YYYY' });
+        }
     try {
         // Find the chemical by name
         const chemical = await Chemical.findOne({ chemicalname });
