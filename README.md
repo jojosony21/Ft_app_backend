@@ -17,14 +17,23 @@ This backend application serves as the server-side component for our project. It
 1. **Clone the repository:**
    ```bash
    git clone https://github.com/jojosony21/Ft_app_backend
-2.Install dependencies:npm install
-3.Database setup:
+   
+#2.Install dependencies:npm install
+
+##3.Database setup:
+
 .Install and configure MongoDB.
 .Update the database configurations in  config.js.
-4.Environment setup:
+
+##4.Environment setup:
+
 Create a .env file based on .env.example and configure environment variables.
-5.Start the server:npm start 
-5.Endpoints
+
+##5.Start the server:npm start 
+
+##5.Endpoints
+
+
 .User Authentication:
 ./register: Register a new user.
 ./login: Log in an existing user.
@@ -44,10 +53,16 @@ Usage History:
 ./chemical-usage-history: Get the usage history of chemicals.
 ./reagent-usage-history: Get the usage history of reagents.
 ./experiment-history: Get the history of conducted experiments.
-Authentication
+
+
+##Authentication
+
+
 This application uses JWT tokens for authentication. To access protected endpoints, include the JWT token in the Authorization header of your requests.
-Contributing
+
+
+##Contributing
 Contributions are welcome! Please follow the guidelines outlined in CONTRIBUTING.md.
 
-License
+##License
 This project is licensed under the MIT License - see the LICENSE file for details.
