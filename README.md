@@ -18,51 +18,65 @@ This backend application serves as the server-side component for our project. It
    ```bash
    git clone https://github.com/jojosony21/Ft_app_backend
    
-#2.Install dependencies:npm install
 
-##3.Database setup:
+## Installation
 
-.Install and configure MongoDB.
-.Update the database configurations in  config.js.
+1. **Install dependencies:** Run `npm install`.
 
-##4.Environment setup:
+## Database setup
 
-Create a .env file based on .env.example and configure environment variables.
+1. **Install and configure MongoDB:** 
+2. **Update the database configurations:** Modify `config.js` with your MongoDB configuration.
 
-##5.Start the server:npm start 
+## Environment setup
 
-##5.Endpoints
+1. **Create `.env` file:** 
+    - Duplicate `.env.example`.
+    - Configure environment variables in `.env`.
 
+## Start the server
 
-.User Authentication:
-./register: Register a new user.
-./login: Log in an existing user.
-./forgot-password: Send password reset link to user's email.
-.Chemical Management:
-./add-chemical: Add a new chemical to the inventory.
-./use-chemical: Record the usage of a chemical from the inventory.
-./recent-chemicals: Get the list of recently used chemicals.
-.Reagent Management:
-./add-reagent: Add a new reagent to the inventory.
-./use-reagent: Record the usage of a reagent from the inventory.
-./recent-reagents: Get the list of recently used reagents.
-.Experiment Management:
-./add-experiment: Add a new experiment.
-./recent-experiments: Get the list of recently conducted experiments.
-Usage History:
-./chemical-usage-history: Get the usage history of chemicals.
-./reagent-usage-history: Get the usage history of reagents.
-./experiment-history: Get the history of conducted experiments.
+- Run `npm start` to start the server.
 
+## Endpoints
 
-##Authentication
+### User Authentication
 
+- **Register:** `/register` - Register a new user.
+- **Login:** `/login` - Log in an existing user.
+- **Forgot Password:** `/forgot-password` - Send password reset link to user's email.
 
-This application uses JWT tokens for authentication. To access protected endpoints, include the JWT token in the Authorization header of your requests.
+### Chemical Management
 
+- **Add Chemical:** `/add-chemical` - Add a new chemical to the inventory.
+- **Use Chemical:** `/use-chemical` - Record the usage of a chemical from the inventory.
+- **Recent Chemicals:** `/recent-chemicals` - Get the list of recently used chemicals.
 
-##Contributing
-Contributions are welcome! Please follow the guidelines outlined in CONTRIBUTING.md.
+### Reagent Management
 
-##License
-This project is licensed under the MIT License - see the LICENSE file for details.
+- **Add Reagent:** `/add-reagent` - Add a new reagent to the inventory.
+- **Use Reagent:** `/use-reagent` - Record the usage of a reagent from the inventory.
+- **Recent Reagents:** `/recent-reagents` - Get the list of recently used reagents.
+
+### Experiment Management
+
+- **Add Experiment:** `/add-experiment` - Add a new experiment.
+- **Recent Experiments:** `/recent-experiments` - Get the list of recently conducted experiments.
+
+### Usage History
+
+- **Chemical Usage History:** `/chemical-usage-history` - Get the usage history of chemicals.
+- **Reagent Usage History:** `/reagent-usage-history` - Get the usage history of reagents.
+- **Experiment History:** `/experiment-history` - Get the history of conducted experiments.
+
+## Authentication
+
+- This application uses JWT tokens for authentication. Include the JWT token in the `Authorization` header of your requests to access protected endpoints.
+
+## Contributing
+
+- Contributions are welcome! Please follow the guidelines outlined in `CONTRIBUTING.md`.
+
+## License
+
+- This project is licensed under the MIT License. See the `LICENSE` file for details.
