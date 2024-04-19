@@ -26,7 +26,7 @@ This backend application serves as the server-side component for our project. It
 ## Database setup
 
 1. **Install and configure MongoDB:** 
-2. **Update the database configurations:** Modify `config.js` with your MongoDB configuration.
+2. **Update the database configurations:** Modify `app.js` with your MongoDB configuration.
 
 ## Environment setup
 
@@ -36,7 +36,7 @@ This backend application serves as the server-side component for our project. It
 
 ## Start the server
 
-- Run `npm start` to start the server.
+- Run `node app.js` to start the server.
 
 ## Endpoints
 
