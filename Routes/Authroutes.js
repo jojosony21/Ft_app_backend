@@ -89,7 +89,7 @@ router.post("/login-user", async (req, res) => {
         .send({ status: "error", data: "Invalid password" });
     }
 
-    const token = jwt.sign({ username: oldUser.username }, JWT_SECRET);
+    const token = jwt.sign({ username: oldUser.username,emai:oldUser.email }, JWT_SECRET);
 
     res.status(200).send({ status: "ok", data: "Success", msg: token });
   } catch (error) {
@@ -193,9 +193,10 @@ router.post("/userdata", async (req, res) => {
   try {
     const user = jwt.verify(token, JWT_SECRET);
     const useremail = user.email;
+    const username = user.username;
 
     User.findOne({ email: useremail }).then((data) => {
-      return res.send({ status: "ok", data: data });
+      return res.send({ status: "ok", data: username,useremail });
     });
   } catch (err) {
     return res.send({ status: "error" });
