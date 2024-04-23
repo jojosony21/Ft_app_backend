@@ -195,11 +195,13 @@ router.post("/userdata", async (req, res) => {
     const useremail = user.email;
     const name = user.username;
 
-    User.findOne({ email: useremail }).then((data) => {
-      return res.send({ status: "ok", data: name,useremail });
-    });
+    if (User.findOne({ email: useremail })) {
+      return res.send({ status: "ok", data: { useremail, name } });
+    } else {
+      return res.send({ stauts: "error", data: "user doesnot exits" });
+    }
   } catch (err) {
-    return res.send({ status: "error" });
+    return res.send({ status: "error", data: "internal server error" });
   }
 });
 
