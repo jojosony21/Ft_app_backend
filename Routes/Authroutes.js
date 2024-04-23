@@ -193,10 +193,10 @@ router.post("/userdata", async (req, res) => {
   try {
     const user = jwt.verify(token, JWT_SECRET);
     const useremail = user.email;
-    const username = user.username;
+    const name = user.username;
 
     User.findOne({ email: useremail }).then((data) => {
-      return res.send({ status: "ok", data: username,useremail });
+      return res.send({ status: "ok", data: name,useremail });
     });
   } catch (err) {
     return res.send({ status: "error" });
