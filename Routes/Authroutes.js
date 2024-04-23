@@ -188,17 +188,18 @@ router.post("/resetpass", async (req, res) => {
 });
 
 //Unique user details
-
 router.post("/userdata", async (req, res) => {
   const { token } = req.body;
   try {
-    const decodedToken = jwt.verify(token, JWT_SECRET);
-    const username = decodedToken.username;
-    res.send({ status: "ok", data: username });
-    // Here you can use userEmail to fetch user data
-    // For example: UserActivation.findOne({ email: userEmail }).then(...)
-  } catch (error) {
-    return res.status(401).send({ error: "Invalid token" });
+    const user = jwt.verify(token, JWT_SECRET);
+    const useremail = user.email;
+
+    User.findOne({ email: useremail }).then((data) => {
+      return res.send({ status: "ok", data: data });
+    });
+  } catch (err) {
+    return res.send({ status: "error" });
   }
 });
+
 module.exports = router;
