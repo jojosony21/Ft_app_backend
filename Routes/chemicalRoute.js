@@ -211,18 +211,15 @@ router.post("/chemical-usage-history", async (req, res) => {
 
 router.get("/recently-used-chemicals", async (req, res) => {
   try {
-    // Fetch the 3 most recent chemical usage entries sorted by date in descending order
-    const recentChemicals = await ChemicalUsage.find({ usedAs: "Chemical" })
-      .sort({ date: -1 })
-      .limit(3)
-      .select("chemicalname");
+    // Fetch all unique chemical names from the chemical usage entries
+    const uniqueChemicalNames = await ChemicalUsage.distinct("chemicalname", {
+      usedAs: "Chemical",
+    });
 
-    // Extract only the chemical names from the fetched data
-    const chemicalNames = recentChemicals.map(
-      (chemical) => chemical.chemicalname
-    );
+    // Get the first three elements from the array
+    const recentChemicals = uniqueChemicalNames.slice(0, 3);
 
-    res.status(200).json({ status: "success", data: chemicalNames });
+    res.status(200).json({ status: "success", data: recentChemicals });
   } catch (error) {
     console.error("Error fetching recently used chemicals:", error);
     res.status(500).json({ status: "fail", data: "Internal server error" });
