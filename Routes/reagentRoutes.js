@@ -153,17 +153,18 @@ router.post("/use-reagent", async (req, res) => {
 });
 
 //recently used reagents
-
 router.get("/recently-used-reagents", async (req, res) => {
   try {
-    // Fetch the 3 most recent reagent usage entries sorted by date in descending order
-    const recentReagents = await ChemicalUsage.find({ usedAs: "Reagent" })
-      .sort({ date: -1 })
-      .limit(3)
-      .select("chemicalname -_id"); // Exclude the _id field from the response
+    // Aggregate pipeline to group reagents, sort them by date, and limit to 3
+    const recentReagents = await ChemicalUsage.aggregate([
+      { $match: { usedAs: "Reagent" } }, // Filter reagent usage entries
+      { $group: { _id: "$chemicalname", date: { $max: "$date" } } }, // Group by reagent name and get max date
+      { $sort: { date: -1 } }, // Sort by date in descending order
+      { $limit: 3 }, // Limit to 3 results
+    ]);
 
     // Extract only the reagent names from the fetched data
-    const reagentNames = recentReagents.map((reagent) => reagent.chemicalname);
+    const reagentNames = recentReagents.map((reagent) => reagent._id);
 
     res.status(200).json({ status: "success", data: reagentNames });
   } catch (error) {
@@ -171,5 +172,6 @@ router.get("/recently-used-reagents", async (req, res) => {
     res.status(500).json({ status: "fail", data: "Internal server error" });
   }
 });
+
 
 module.exports = router;
