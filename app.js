@@ -54,7 +54,7 @@ app.get("/recently-used-chemicals", chemicalRoute);
 app.post("/chemicals/search", chemicalRoute);
 app.get("/gethistory", chemicalRoute);
 app.post("/check-low-stock",chemicalRoute);
-app.post("/check-expiry",chemicalRoutes);
+app.post("/check-expiry",chemicalRoute);
 //Reagent routes
 
 app.post("/add-reagent", reagentRoutes);
