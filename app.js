@@ -68,6 +68,7 @@ app.get("/experiments", experimentRoutes);
 app.get("/getexperiment/:name", experimentRoutes);
 app.use("/use-experiment", experimentRoutes);
 app.get("/chemicals-reagent", commonRoutes);
+app.get("/recently-used-experiments",experimentRoutes);
 
 //common routes
 
