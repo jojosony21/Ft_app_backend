@@ -67,16 +67,18 @@ router.get("/recently-used", async (req, res) => {
   try {
     // Fetch the 3 most recent experiments
     const recentExperiments = await ChemicalUsage.aggregate([
-      {$match:{usedAs:"Experiment"} },
-      { $group: { _id: "$name", date: { $max: "$createdAt" } } },
-      { $sort: { date: -1 } },
+      { $match: { usedAs: "Experiment" } },
+      { $sort: { createdAt: -1 } }, // Sort by createdAt field in descending order
+      { $group: { _id: "$name", date: { $first: "$createdAt" } } }, // Group by name and get the date of the first entry
+      { $sort: { date: -1 } }, // Sort again by date in descending order
       { $limit: 3 },
     ]);
 
     // Fetch the 3 most recent reagents
     const recentReagents = await ChemicalUsage.aggregate([
       { $match: { usedAs: "Reagent" } },
-      { $group: { _id: "$name", date: { $max: "$createdAt" } } },
+      { $sort: { createdAt: -1 } },
+      { $group: { _id: "$name", date: { $first: "$createdAt" } } },
       { $sort: { date: -1 } },
       { $limit: 3 },
     ]);
@@ -84,15 +86,14 @@ router.get("/recently-used", async (req, res) => {
     // Fetch the 3 most recent chemicals
     const recentChemicals = await ChemicalUsage.aggregate([
       { $match: { usedAs: "Chemical" } },
-      { $group: { _id: "$chemicalname", date: { $max: "$createdAt" } } },
+      { $sort: { createdAt: -1 } },
+      { $group: { _id: "$chemicalname", date: { $first: "$createdAt" } } },
       { $sort: { date: -1 } },
       { $limit: 3 },
     ]);
 
     // Extract only the names from the fetched data
-    const experimentNames = recentExperiments.map(
-      (experiment) => experiment._id
-    );
+    const experimentNames = recentExperiments.map((experiment) => experiment._id);
     const reagentNames = recentReagents.map((reagent) => reagent._id);
     const chemicalNames = recentChemicals.map((chemical) => chemical._id);
 
