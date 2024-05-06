@@ -264,4 +264,23 @@ router.get("/gethistory", async (req, res) => {
   }
 });
 
+router.post('/check-low-stock', async (req, res) => {
+    const { quantity } = req.body;
+    try {
+        const lowStockChemicals = await Chemical.find({
+            addquantity: { $lt: quantity }, 
+        },
+        { chemicalname: 1, addquantity: 1}
+    );
+
+        if (lowStockChemicals.length > 0) {
+            res.status(200).send({ status: 'ok', data: { lowStockChemicals } });
+        } else {
+            res.status(200).send({ status: 'ok', message: 'No low stock chemicals found.' });
+        }
+    } catch (error) {
+        console.error('Error fetching low stock chemicals:', error);
+        res.status(500).send({ error: 'Internal server error' });
+    }
+});
 module.exports = router;
