@@ -66,7 +66,7 @@ app.get("/recently-used-reagents", reagentRoutes);
 app.post("/add-experiment", experimentRoutes);
 app.get("/experiments", experimentRoutes);
 app.get("/getexperiment/:name", experimentRoutes);
-app.use("/use-experiment", experimentRoutes);
+app.post("/use-experiment", experimentRoutes);
 app.get("/chemicals-reagent", commonRoutes);
 app.get("/recently-used-experiments",experimentRoutes);
 
