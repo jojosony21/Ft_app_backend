@@ -262,7 +262,7 @@ router.post("/use-experiment", async (req, res) => {
           batch,
           date,
           remark,
-          usedAs: "Reagent",
+          usedAs: "Experiment",
           name: reagentName,
         });
 
