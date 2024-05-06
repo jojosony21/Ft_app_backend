@@ -235,7 +235,7 @@ router.post("/use-experiment", async (req, res) => {
         date,
         remark,
         usedAs: "Experiment",
-        name: "chemical",
+        name: expname,
       });
 
       return Promise.all([chem.save(), chemicalUsage.save()]);
@@ -268,7 +268,7 @@ router.post("/use-experiment", async (req, res) => {
           date,
           remark,
           usedAs: "Experiment",
-          name: reagentName,
+          name: expname,
         });
 
         await Promise.all([chem.save(), chemicalUsage.save()]);
