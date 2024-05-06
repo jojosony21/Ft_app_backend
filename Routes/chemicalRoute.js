@@ -122,7 +122,12 @@ router.post("/update-chemical", async (req, res) => {
 // Route to use a chemical by name
 router.post("/use-chemical", async (req, res) => {
   const { chemicalname, quantity, batch, date, remark } = req.body;
-
+  if (!moment(date, "DD-MM-YYYY", true).isValid()) {
+    return res.status(400).send({
+      status: "fail",
+      data: "Invalid date format, please use DD-MM-YYYY",
+    });
+  }
   try {
     // Find the chemical by name
     const chemical = await Chemical.findOne({ chemicalname });
@@ -291,9 +296,9 @@ router.post('/check-expiry', async (req, res) => {
 
         const expiringChemicals = await Chemical.find(
             {
-                expirydate: { $lte: currentDate }, // Find chemicals with expiry dates less than or equal to currentDate
+                expirydate: { $lte: currentDate }, 
             },
-            { chemicalname: 1, addquantity: 1, expirydate: 1 } // Projection to include only specified fields
+            { chemicalname: 1, addquantity: 1, expirydate: 1 } 
         );
 
         res.status(200).send({ status: 'ok', data: { expiringChemicals } });
