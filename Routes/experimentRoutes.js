@@ -202,4 +202,24 @@ router.use("/use-experiment", async (req, res) => {
     res.status(500).json({ status: "fail", message: "Internal server error" });
   }
 });
+
+router.get("/recently-used-experiments", async (req, res) => {
+  try {
+    // Aggregate pipeline to group experiments, sort them by date, and limit to 3
+    const recentExperiments = await Experiment.aggregate([
+      { $group: { _id: "$name", date: { $max: "$createdAt" } } }, // Group by experiment name and get max date
+      { $sort: { date: -1 } }, // Sort by date in descending order
+      { $limit: 3 }, // Limit to 3 results
+    ]);
+
+    // Extract only the experiment names from the fetched data
+    const experimentNames = recentExperiments.map((experiment) => experiment._id);
+
+    res.status(200).json({ status: "success", data: experimentNames });
+  } catch (error) {
+    console.error("Error fetching recently used experiments:", error);
+    res.status(500).json({ status: "fail", data: "Internal server error" });
+  }
+});
+
 module.exports = router;
