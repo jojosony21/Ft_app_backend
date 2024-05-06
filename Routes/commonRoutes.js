@@ -11,6 +11,7 @@ require("../Schemas/UserDetails");
 const Chemical = mongoose.model("Chemical");
 const Reagent = mongoose.model("Reagent");
 const Experiment = mongoose.model("Experiment");
+const ChemicalUsage = mongoose.model("ChemicalUsage");
 
 router.get("/chemicals-reagent", async (req, res) => {
   try {
@@ -61,4 +62,51 @@ router.get("/chemical-reagent-experiment", async (req, res) => {
     res.status(500).json({ status: "error", message: "Internal server error" });
   }
 });
+//to get 3 recently used chemical
+router.get("/recently-used", async (req, res) => {
+  try {
+    // Fetch the 3 most recent experiments
+    const recentExperiments = await Experiment.aggregate([
+      { $group: { _id: "$name", date: { $max: "$createdAt" } } },
+      { $sort: { date: -1 } },
+      { $limit: 3 },
+    ]);
+
+    // Fetch the 3 most recent reagents
+    const recentReagents = await ChemicalUsage.aggregate([
+      { $match: { usedAs: "Reagent" } },
+      { $group: { _id: "$chemicalname", date: { $max: "$createdAt" } } },
+      { $sort: { date: -1 } },
+      { $limit: 3 },
+    ]);
+
+    // Fetch the 3 most recent chemicals
+    const recentChemicals = await ChemicalUsage.aggregate([
+      { $match: { usedAs: "Chemical" } },
+      { $group: { _id: "$chemicalname", date: { $max: "$createdAt" } } },
+      { $sort: { date: -1 } },
+      { $limit: 3 },
+    ]);
+
+    // Extract only the names from the fetched data
+    const experimentNames = recentExperiments.map(
+      (experiment) => experiment._id
+    );
+    const reagentNames = recentReagents.map((reagent) => reagent._id);
+    const chemicalNames = recentChemicals.map((chemical) => chemical._id);
+
+    // Combine the names into a single array
+    const recentlyUsed = {
+      experiments: experimentNames,
+      reagents: reagentNames,
+      chemicals: chemicalNames,
+    };
+
+    res.status(200).json({ status: "success", data: recentlyUsed });
+  } catch (error) {
+    console.error("Error fetching recently used data:", error);
+    res.status(500).json({ status: "fail", data: "Internal server error" });
+  }
+});
+
 module.exports = router;
