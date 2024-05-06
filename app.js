@@ -74,6 +74,7 @@ app.get("/recently-used-experiments",experimentRoutes);
 
 app.get("/chemicals-reagent", commonRoutes);
 app.get("/chemical-reagent-experiment", commonRoutes);
+app.get("/recently-used",commonRoutes);
 
 //schedule runs every day at midnight to remove expired chemicals from data base
 
