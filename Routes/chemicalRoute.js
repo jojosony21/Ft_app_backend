@@ -283,4 +283,23 @@ router.post('/check-low-stock', async (req, res) => {
         res.status(500).send({ error: 'Internal server error' });
     }
 });
+router.post('/check-expiry', async (req, res) => {
+    const { date } = req.body;
+
+    try {
+        const currentDate = new Date(date);
+
+        const expiringChemicals = await Chemical.find(
+            {
+                expirydate: { $lte: currentDate }, // Find chemicals with expiry dates less than or equal to currentDate
+            },
+            { chemicalname: 1, addquantity: 1, expirydate: 1 } // Projection to include only specified fields
+        );
+
+        res.status(200).send({ status: 'ok', data: { expiringChemicals } });
+    } catch (error) {
+        console.error('Error fetching expiring chemicals:', error);
+        res.status(500).send({ error: 'Internal server error' });
+    }
+});
 module.exports = router;
