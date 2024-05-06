@@ -205,7 +205,12 @@ router.get("/getexperiment/:name", async (req, res) => {
 router.post("/use-experiment", async (req, res) => {
   try {
     const { expname, batch, date, remark } = req.body;
-
+      if (!moment(date, "DD-MM-YYYY", true).isValid()) {
+      return res.status(400).send({
+        status: "fail",
+        data: "Invalid date format, please use DD-MM-YYYY",
+      });
+    }
     // Find the experiment by name
     const experiment = await Experiment.findOne({ name: expname });
 
