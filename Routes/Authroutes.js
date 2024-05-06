@@ -195,13 +195,15 @@ router.post("/userdata", async (req, res) => {
     const useremail = user.email;
     const name = user.username;
 
-    if (User.findOne({ email: useremail })) {
-      return res.send({ status: "ok", data: { useremail, name } });
+    const existingUser = await User.findOne({ email: useremail });
+
+    if (existingUser) {
+      return res.send({ status: "ok", data: { name, useremail } });
     } else {
-      return res.send({ stauts: "error", data: "user doesnot exits" });
+      return res.send({ status: "error", data: "User does not exist" });
     }
   } catch (err) {
-    return res.send({ status: "error", data: "internal server error" });
+    return res.send({ status: "error", data: "Internal server error" });
   }
 });
 
