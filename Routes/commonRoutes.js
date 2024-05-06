@@ -75,7 +75,7 @@ router.get("/recently-used", async (req, res) => {
     // Fetch the 3 most recent reagents
     const recentReagents = await ChemicalUsage.aggregate([
       { $match: { usedAs: "Reagent" } },
-      { $group: { _id: "$chemicalname", date: { $max: "$createdAt" } } },
+      { $group: { _id: "$name", date: { $max: "$createdAt" } } },
       { $sort: { date: -1 } },
       { $limit: 3 },
     ]);
