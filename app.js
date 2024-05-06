@@ -53,7 +53,8 @@ app.post("/chemical-usage-history", chemicalRoute);
 app.get("/recently-used-chemicals", chemicalRoute);
 app.post("/chemicals/search", chemicalRoute);
 app.get("/gethistory", chemicalRoute);
-
+app.post("/check-low-stock",chemicalRoute);
+app.post("/check-expiry",chemicalRoutes);
 //Reagent routes
 
 app.post("/add-reagent", reagentRoutes);
