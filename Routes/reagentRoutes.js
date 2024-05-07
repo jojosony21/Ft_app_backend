@@ -85,13 +85,7 @@ router.get("/reagents", async (req, res) => {
 router.post("/use-reagent", async (req, res) => {
   const { reagentname, usedquantity, batch, date, remark } = req.body;
 
-  if (!moment(date, "DD-MM-YYYY", true).isValid()) {
-    return res.status(400).send({
-      status: "fail",
-      data: "Invalid date format, please use DD-MM-YYYY",
-    });
-  }
-
+  
   try {
     // Find the chemical by name
     const reagent = await Reagent.findOne({ reagentname });
