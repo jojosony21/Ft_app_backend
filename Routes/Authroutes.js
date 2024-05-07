@@ -205,5 +205,47 @@ router.post("/userdata", async (req, res) => {
     return res.send({ status: "error", data: "internal server error" });
   }
 });
+router.post("/change-password", async (req, res) => {
+  const { email, currentPassword, newPassword } = req.body;
+
+  try {
+    // Find the user by email
+    const user = await User.findOne({ email });
+
+    // Check if the user exists
+    if (!user) {
+      return res
+        .status(404)
+        .json({ status: "error", message: "User not found" });
+    }
+
+    // Check if the current password matches the stored password
+    const isPasswordValid = await bcrypt.compare(
+      currentPassword,
+      user.password
+    );
+    if (!isPasswordValid) {
+      return res
+        .status(401)
+        .json({ status: "error", message: "Invalid current password" });
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update the user's password
+    user.password = hashedPassword;
+    await user.save();
+
+    return res
+      .status(200)
+      .json({ status: "success", message: "Password updated successfully" });
+  } catch (error) {
+    console.error("Error changing password:", error);
+    return res
+      .status(500)
+      .json({ status: "error", message: "Internal server error" });
+  }
+});
 
 module.exports = router;
