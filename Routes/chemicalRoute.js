@@ -32,12 +32,7 @@ router.post("/add-chemical", async (req, res) => {
       });
     }
     // Check if the date format is valid using moment.js
-    if (!moment(expirydate, "DD-MM-YYYY", true).isValid()) {
-      return res.status(400).send({
-        status: "fail",
-        data: "Invalid date format, please use DD-MM-YYYY",
-      });
-    }
+   
     // Check if a chemical with the same name already exists
     const existingChemical = await Chemical.findOne({
       chemicalname: chemicalname,
@@ -89,12 +84,7 @@ router.post("/update-chemical", async (req, res) => {
       .send({ status: "fail", data: "Missing or null values in request body" });
   }
   // Check if the date format is valid using moment.js
-  if (!moment(expirydate, "DD-MM-YYYY", true).isValid()) {
-    return res.status(400).send({
-      status: "fail",
-      data: "Invalid date format, please use DD-MM-YYYY",
-    });
-  }
+ 
 
   try {
     const existingChemical = await Chemical.findOne({ chemicalname });
@@ -122,12 +112,7 @@ router.post("/update-chemical", async (req, res) => {
 // Route to use a chemical by name
 router.post("/use-chemical", async (req, res) => {
   const { chemicalname, quantity, batch, date, remark } = req.body;
-  if (!moment(date, "DD-MM-YYYY", true).isValid()) {
-    return res.status(400).send({
-      status: "fail",
-      data: "Invalid date format, please use DD-MM-YYYY",
-    });
-  }
+ 
   try {
     // Find the chemical by name
     const chemical = await Chemical.findOne({ chemicalname });
