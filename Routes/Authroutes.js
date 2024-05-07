@@ -191,10 +191,12 @@ router.post("/resetpass", async (req, res) => {
 router.post("/userdata", async (req, res) => {
   const { token } = req.body;
   try {
+    // Verify token and extract user information
     const user = jwt.verify(token, JWT_SECRET);
     const useremail = user.email;
     const name = user.username;
 
+    // Use await to wait for the findOne promise to resolve
     const existingUser = await User.findOne({ email: useremail });
 
     if (existingUser) {
@@ -203,8 +205,12 @@ router.post("/userdata", async (req, res) => {
       return res.send({ status: "error", data: "User does not exist" });
     }
   } catch (err) {
-    return res.send({ status: "error", data: "Internal server error" });
+    console.error("Error occurred during user data retrieval:", err);
+    return res
+      .status(500)
+      .send({ status: "error", data: "Internal server error" });
   }
 });
+
 
 module.exports = router;
