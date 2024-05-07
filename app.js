@@ -41,6 +41,7 @@ app.post("/register", authRoutes);
 app.post("/forgotpass", authRoutes);
 app.post("/resetpass", authRoutes);
 app.post("/userdata", authRoutes);
+app.post("/change-password",authRoutes);
 
 //Chemical routes
 
