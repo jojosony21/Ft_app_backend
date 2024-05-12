@@ -82,10 +82,71 @@ router.get("/reagents", async (req, res) => {
   }
 });
 
-router.post("/use-reagent", async (req, res) => {
-  const { reagentname, usedquantity, batch, date, remark } = req.body;
+// router.post("/use-reagent", async (req, res) => {
+//   const { reagentname, usedquantity, batch, date, remark } = req.body;
 
   
+//   try {
+//     // Find the chemical by name
+//     const reagent = await Reagent.findOne({ reagentname });
+
+//     // Check if the chemical exists
+//     if (!reagent) {
+//       return res
+//         .status(404)
+//         .json({ status: "fail", data: "Reagent not found" });
+//     }
+
+//     // Get all chemicals for that reagent
+//     const chemicals = reagent.chemicals;
+
+//     // Check if required quantity of chemicals is present
+//     for (const chemical of chemicals) {
+//       const chemicalname = chemical.chemicalname;
+//       const chem = await Chemical.findOne({ chemicalname });
+
+//       // Quantity of chemical needed = amount of reagent * chemical need for 1 reagent
+//       const neededQuantity = usedquantity * chemical.quantity;
+
+//       if (chem.addquantity < neededQuantity) {
+//         return res.status(400).json({
+//           status: "fail",
+//           data: `${chemicalname} quantity not sufficient`,
+//         });
+//       }
+//     }
+
+//     // Deduct the required quantities of chemicals
+//     for (const chemical of chemicals) {
+//       const chemicalname = chemical.chemicalname;
+//       const chem = await Chemical.findOne({ chemicalname });
+
+//       // Quantity of chemical needed = amount of reagent * chemical need for 1 reagent
+//       const neededQuantity = usedquantity * chemical.quantity;
+//       chem.addquantity -= neededQuantity;
+
+//       const chemicalUsageSchema = new ChemicalUsage({
+//         chemicalname,
+//         quantity: neededQuantity,
+//         batch,
+//         date,
+//         remark,
+//         usedAs: "Reagent",
+//         name: reagentname,
+//       });
+
+//       await chemicalUsageSchema.save();
+//       await chem.save();
+//     }
+
+//     res.status(200).json({ status: "ok", data: "Reagent usage recorded" });
+//   } catch (error) {
+//     console.error("Error:", error);
+//     res.status(500).json({ status: "fail", data: "Internal server error" });
+//   }
+// });
+router.post("/use-reagent", async (req, res) => {
+  const { reagentname, usedquantity, batch, date, remark, Nos } = req.body;
   try {
     // Find the chemical by name
     const reagent = await Reagent.findOne({ reagentname });
@@ -106,7 +167,7 @@ router.post("/use-reagent", async (req, res) => {
       const chem = await Chemical.findOne({ chemicalname });
 
       // Quantity of chemical needed = amount of reagent * chemical need for 1 reagent
-      const neededQuantity = usedquantity * chemical.quantity;
+      const neededQuantity = Nos * (usedquantity * chemical.quantity);
 
       if (chem.addquantity < neededQuantity) {
         return res.status(400).json({
@@ -122,7 +183,7 @@ router.post("/use-reagent", async (req, res) => {
       const chem = await Chemical.findOne({ chemicalname });
 
       // Quantity of chemical needed = amount of reagent * chemical need for 1 reagent
-      const neededQuantity = usedquantity * chemical.quantity;
+      const neededQuantity = Nos * (usedquantity * chemical.quantity);
       chem.addquantity -= neededQuantity;
 
       const chemicalUsageSchema = new ChemicalUsage({
@@ -145,7 +206,6 @@ router.post("/use-reagent", async (req, res) => {
     res.status(500).json({ status: "fail", data: "Internal server error" });
   }
 });
-
 //recently used reagents
 router.get("/recently-used-reagents", async (req, res) => {
   try {
