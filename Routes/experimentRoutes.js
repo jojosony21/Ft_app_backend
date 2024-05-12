@@ -97,135 +97,109 @@ router.get("/getexperiment/:name", async (req, res) => {
   }
 });
 
-// router.use("/use-experiment", async (req, res) => {
+// router.post("/use-experiment", async (req, res) => {
 //   try {
 //     const { expname, batch, date, remark } = req.body;
-
+      
 //     // Find the experiment by name
-//     const experiment = await Experiment.findOne({
-//       name: expname,
-//     });
+//     const experiment = await Experiment.findOne({ name: expname });
 
 //     if (!experiment) {
-//       return res
-//         .status(404)
-//         .json({ status: "fail", message: "Experiment not found" });
+//       return res.status(404).json({ status: "fail", message: "Experiment not found" });
 //     }
 
-//     const chemicals = experiment.chemicalsUsed;
-//     const reagents = experiment.reagentsUsed;
+//     const chemicalsPromises = experiment.chemicalsUsed.map(async (chemical) => {
+//       const { chemicalName, quantity } = chemical;
+//       const chem = await Chemical.findOne({ chemicalname: chemicalName });
 
-//     chemicals.forEach(async (chemical) => {
-//       const quantity = chemical.quantity;
-//       const chemicalname = chemical.chemicalName;
-//       if (chemical.addquantity < quantity) {
-//         return res.status(400).json({
-//           status: "fail",
-//           data: "Not enough quantity of the chemical available",
-//         });
+//       if (!chem || chem.addquantity < quantity) {
+//         throw new Error(`Not enough quantity of ${chemicalName} available`);
 //       }
 
-//       chemical.addquantity -= quantity;
+//       chem.addquantity -= quantity;
 
-//       const chemicalUsageSchema = new ChemicalUsage({
-//         chemicalname,
-//         quantity: quantity,
+//       const chemicalUsage = new ChemicalUsage({
+//         chemicalname: chemicalName,
+//         quantity,
 //         batch,
 //         date,
 //         remark,
-//         usedAs: "Chemical",
-//         name: "chemical",
+//         usedAs: "Experiment",
+//         name: expname,
 //       });
 
-//       await chemicalUsageSchema.save();
-//       await chemical.save();
+//       return Promise.all([chem.save(), chemicalUsage.save()]);
 //     });
 
-//     //For all the reagents in the experiment
-//     reagents.forEach(async (reag) => {
-//       const usedquantity = reag.quantity;
-//       const reagentname = reag.reagentNameName;
+//     const reagentsPromises = experiment.reagentsUsed.map(async (reagent) => {
+//       const { reagentName, quantity } = reagent;
+//       const reagentData = await Reagent.findOne({ reagentname: reagentName });
 
-//       const reagent = await Reagent.findOne({ reagentname });
-
-//       // Check if the chemical exists
-//       if (!reagent) {
-//         return res
-//           .status(404)
-//           .json({ status: "fail", data: "Reagent not found" });
+//       if (!reagentData) {
+//         throw new Error(`Reagent ${reagentName} not found`);
 //       }
 
-//       // Get all chemicals for that reagent
-//       const chemicals = reagent.chemicals;
+//       const chemicals = reagentData.chemicals;
 
-//       // Check if required quantity of chemicals is present
 //       for (const chemical of chemicals) {
-//         const chemicalname = chemical.chemicalname;
+//         const { chemicalname, quantity: chemQuantity } = chemical;
 //         const chem = await Chemical.findOne({ chemicalname });
 
-//         // Quantity of chemical needed = amount of reagent * chemical need for 1 reagent
-//         const neededQuantity = usedquantity * chemical.quantity;
-
-//         if (chem.addquantity < neededQuantity) {
-//           return res.status(400).json({
-//             status: "fail",
-//             data: `${chemicalname} quantity not sufficient`,
-//           });
+//         if (!chem || chem.addquantity < quantity * chemQuantity) {
+//           throw new Error(`Not enough quantity of ${chemicalname} available`);
 //         }
-//       }
 
-//       // Deduct the required quantities of chemicals
-//       for (const chemical of chemicals) {
-//         const chemicalname = chemical.chemicalname;
-//         const chem = await Chemical.findOne({ chemicalname });
+//         chem.addquantity -= quantity * chemQuantity;
 
-//         // Quantity of chemical needed = amount of reagent * chemical need for 1 reagent
-//         const neededQuantity = usedquantity * chemical.quantity;
-//         chem.addquantity -= neededQuantity;
-
-//         const chemicalUsageSchema = new ChemicalUsage({
+//         const chemicalUsage = new ChemicalUsage({
 //           chemicalname,
-//           quantity: neededQuantity,
+//           quantity: quantity * chemQuantity,
 //           batch,
 //           date,
 //           remark,
-//           usedAs: "Reagent",
-//           name: reagentname,
+//           usedAs: "Experiment",
+//           name: expname,
 //         });
 
-//         await chemicalUsageSchema.save();
-//         await chem.save();
+//         await Promise.all([chem.save(), chemicalUsage.save()]);
 //       }
 //     });
+
+//     await Promise.all([...chemicalsPromises, ...reagentsPromises]);
+
+//     res.status(200).json({ status: "success", message: "Experiment data updated successfully" });
 //   } catch (err) {
 //     console.error(err);
-//     res.status(500).json({ status: "fail", message: "Internal server error" });
+//     res.status(400).json({ status: "fail", message: err.message });
 //   }
 // });
+
 router.post("/use-experiment", async (req, res) => {
   try {
-    const { expname, batch, date, remark } = req.body;
-      
+    const { expname, batch, date, remark, num } = req.body;
+
     // Find the experiment by name
     const experiment = await Experiment.findOne({ name: expname });
 
     if (!experiment) {
-      return res.status(404).json({ status: "fail", message: "Experiment not found" });
+      return res
+        .status(404)
+        .json({ status: "fail", message: "Experiment not found" });
     }
 
     const chemicalsPromises = experiment.chemicalsUsed.map(async (chemical) => {
       const { chemicalName, quantity } = chemical;
       const chem = await Chemical.findOne({ chemicalname: chemicalName });
 
-      if (!chem || chem.addquantity < quantity) {
+      if (!chem || chem.addquantity < num * quantity) {
         throw new Error(`Not enough quantity of ${chemicalName} available`);
       }
-
-      chem.addquantity -= quantity;
+      const used = num * quantity;
+      chem.addquantity -= used;
 
       const chemicalUsage = new ChemicalUsage({
         chemicalname: chemicalName,
-        quantity,
+        quantity: used,
         batch,
         date,
         remark,
@@ -250,15 +224,15 @@ router.post("/use-experiment", async (req, res) => {
         const { chemicalname, quantity: chemQuantity } = chemical;
         const chem = await Chemical.findOne({ chemicalname });
 
-        if (!chem || chem.addquantity < quantity * chemQuantity) {
+        if (!chem || chem.addquantity < num * (quantity * chemQuantity)) {
           throw new Error(`Not enough quantity of ${chemicalname} available`);
         }
-
-        chem.addquantity -= quantity * chemQuantity;
+        const usedRe = num * (quantity * chemQuantity);
+        chem.addquantity -= usedRe;
 
         const chemicalUsage = new ChemicalUsage({
           chemicalname,
-          quantity: quantity * chemQuantity,
+          quantity: usedRe,
           batch,
           date,
           remark,
@@ -272,13 +246,15 @@ router.post("/use-experiment", async (req, res) => {
 
     await Promise.all([...chemicalsPromises, ...reagentsPromises]);
 
-    res.status(200).json({ status: "success", message: "Experiment data updated successfully" });
+    res.status(200).json({
+      status: "success",
+      message: "Experiment data updated successfully",
+    });
   } catch (err) {
     console.error(err);
-    res.status(400).json({ status: "fail", message: err.message });
+    res.status(500).json({ status: "fail", message: "Internal server error" });
   }
 });
-
 
 router.get("/recently-used-experiments", async (req, res) => {
   try {
