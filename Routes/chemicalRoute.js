@@ -110,9 +110,54 @@ router.post("/update-chemical", async (req, res) => {
 });
 
 // Route to use a chemical by name
-router.post("/use-chemical", async (req, res) => {
-  const { chemicalname, quantity, batch, date, remark } = req.body;
+// router.post("/use-chemical", async (req, res) => {
+//   const { chemicalname, quantity, batch, date, remark } = req.body;
  
+//   try {
+//     // Find the chemical by name
+//     const chemical = await Chemical.findOne({ chemicalname });
+
+//     // Check if the chemical exists
+//     if (!chemical) {
+//       return res
+//         .status(404)
+//         .json({ status: "fail", data: "Chemical not found" });
+//     }
+
+//     // Check if there is enough quantity of the chemical available
+//     if (chemical.addquantity < quantity) {
+//       return res.status(400).json({
+//         status: "fail",
+//         data: "Not enough quantity of the chemical available",
+//       });
+//     }
+
+//     chemical.addquantity -= quantity;
+
+//     const chemicalUsageSchema = new ChemicalUsage({
+//       chemicalname,
+//       quantity: quantity,
+//       batch,
+//       date,
+//       remark,
+//       usedAs: "Chemical",
+//       name: "chemical",
+//     });
+
+//     await chemicalUsageSchema.save();
+//     await chemical.save();
+
+//     // Create a new usage history entry
+
+//     res.status(200).json({ status: "success", data: { chemical } });
+//   } catch (error) {
+//     console.error("Error using chemical:", error);
+//     res.status(500).json({ status: "fail", data: "Internal server error" });
+//   }
+// });
+router.post("/use-chemical", async (req, res) => {
+  const { chemicalname, quantity, batch, date, remark, Nos } = req.body;
+
   try {
     // Find the chemical by name
     const chemical = await Chemical.findOne({ chemicalname });
@@ -125,23 +170,24 @@ router.post("/use-chemical", async (req, res) => {
     }
 
     // Check if there is enough quantity of the chemical available
-    if (chemical.addquantity < quantity) {
+    const totalquant = quantity * Nos;
+    if (chemical.addquantity < totalquant) {
       return res.status(400).json({
         status: "fail",
         data: "Not enough quantity of the chemical available",
       });
     }
 
-    chemical.addquantity -= quantity;
+    chemical.addquantity -= totalquant;
 
     const chemicalUsageSchema = new ChemicalUsage({
       chemicalname,
-      quantity: quantity,
+      quantity: totalquant,
       batch,
       date,
       remark,
       usedAs: "Chemical",
-      name: "chemical",
+      name: chemicalname,
     });
 
     await chemicalUsageSchema.save();
