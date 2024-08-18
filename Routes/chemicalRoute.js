@@ -108,7 +108,121 @@ router.post("/update-chemical", async (req, res) => {
     res.status(500).send({ status: "fail", data: "internal server error" });
   }
 });
+// Routes to be implemented into the app 
+// Route to delete a chemical
+router.post("/delete-chemical", async (req, res) => {
+  try {
+    const { chemicalname } = req.body;
 
+    // Check if chemicalname is provided
+    if (!chemicalname) {
+      return res.status(400).json({
+        status: "fail",
+        data: "Chemical name is required",
+      });
+    }
+
+    // Delete the chemical directly using the model
+    const deleteResult = await Chemical.deleteOne({ chemicalname });
+
+    if (deleteResult.deletedCount === 0) {
+      return res.status(404).json({
+        status: "fail",
+        data: "Chemical not found",
+      });
+    }
+
+    // Send success response
+    res
+      .status(200)
+      .json({ status: "ok", data: "Chemical deleted successfully" });
+  } catch (error) {
+    // Handle errors
+    console.error("Error deleting chemical:", error);
+    res.status(500).json({ status: "fail", data: "Internal server error" });
+  }
+});
+
+// Route to edit a chemical
+router.post("/edit-chemical", async (req, res) => {
+  try {
+    const { chemicalname, addquantity, expirydate, sellername, sellernum } =
+      req.body;
+
+    // Check if chemicalname is provided
+    if (!chemicalname) {
+      return res.status(400).json({
+        status: "fail",
+        data: "Chemical name is required",
+      });
+    }
+
+    // Find the chemical by name
+    const existingChemical = await Chemical.findOne({ chemicalname });
+
+    if (!existingChemical) {
+      return res
+        .status(404)
+        .json({ status: "fail", data: "Chemical not found" });
+    }
+
+    // Update the fields if they are provided in the request
+    if (addquantity !== undefined) {
+      existingChemical.addquantity = addquantity;
+    }
+    if (expirydate) {
+      existingChemical.expirydate = expirydate;
+    }
+    if (sellername) {
+      existingChemical.sellername = sellername;
+    }
+    if (sellernum) {
+      existingChemical.sellernum = sellernum;
+    }
+
+    // Save the updated chemical
+    await existingChemical.save();
+
+    // Send success response
+    res
+      .status(200)
+      .json({ status: "ok", data: "Chemical updated successfully" });
+  } catch (error) {
+    // Handle errors
+    console.error("Error editing chemical:", error);
+    res.status(500).json({ status: "fail", data: "Internal server error" });
+  }
+});
+// Route to display a chemical by name
+router.post("/display-chemical", async (req, res) => {
+  try {
+    const { chemicalname } = req.body;
+
+    // Check if chemicalname is provided
+    if (!chemicalname) {
+      return res.status(400).json({
+        status: "fail",
+        data: "Chemical name is required",
+      });
+    }
+
+    // Find the chemical by name
+    const chemical = await Chemical.findOne({ chemicalname });
+
+    if (!chemical) {
+      return res
+        .status(404)
+        .json({ status: "fail", data: "Chemical not found" });
+    }
+
+    // Send success response with chemical details
+    res.status(200).json({ status: "ok", data: chemical });
+  } catch (error) {
+    // Handle errors
+    console.error("Error displaying chemical:", error);
+    res.status(500).json({ status: "fail", data: "Internal server error" });
+  }
+});
 // Route to use a chemical by name
 // router.post("/use-chemical", async (req, res) => {
 //   const { chemicalname, quantity, batch, date, remark } = req.body;
