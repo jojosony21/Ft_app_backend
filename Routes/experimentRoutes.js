@@ -97,6 +97,118 @@ router.get("/getexperiment/:name", async (req, res) => {
   }
 });
 
+router.post("/delete-experiment", async (req, res) => {
+  try {
+    const { name } = req.body;
+
+    // Check if experiment name is provided
+    if (!name) {
+      return res.status(400).json({
+        status: "fail",
+        data: "Experiment name is required",
+      });
+    }
+
+    // Find and delete the experiment by name
+    const deleteResult = await Experiment.deleteOne({ name });
+
+    if (deleteResult.deletedCount === 0) {
+      return res.status(404).json({
+        status: "fail",
+        data: "Experiment not found",
+      });
+    }
+
+    // Send success response
+    res
+      .status(200)
+      .json({ status: "ok", data: "Experiment deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting experiment:", error);
+    res.status(500).json({ status: "fail", data: "Internal server error" });
+  }
+});
+
+router.post("/edit-experiment", async (req, res) => {
+  try {
+    const { name, chemicalsUsed, reagentsUsed } = req.body;
+
+    // Check if experiment name is provided
+    if (!name) {
+      return res.status(400).json({
+        status: "fail",
+        data: "Experiment name is required",
+      });
+    }
+
+    // Find the existing experiment by name
+    const existingExperiment = await Experiment.findOne({ name });
+
+    if (!existingExperiment) {
+      return res.status(404).json({
+        status: "fail",
+        data: "Experiment not found",
+      });
+    }
+
+    // Update chemicalsUsed and reagentsUsed if provided
+    if (chemicalsUsed && Array.isArray(chemicalsUsed)) {
+      existingExperiment.chemicalsUsed = chemicalsUsed.map((chemical) => ({
+        chemicalName: chemical.chemicalname,
+        quantity: chemical.quantity || 0,
+      }));
+    }
+
+    if (reagentsUsed && Array.isArray(reagentsUsed)) {
+      existingExperiment.reagentsUsed = reagentsUsed.map((reagent) => ({
+        reagentName: reagent.reagentname,
+        quantity: reagent.quantity || 0,
+      }));
+    }
+
+    // Save the updated experiment to the database
+    await existingExperiment.save();
+
+    // Send success response
+    res
+      .status(200)
+      .json({ status: "ok", data: "Experiment updated successfully" });
+  } catch (error) {
+    console.error("Error editing experiment:", error);
+    res.status(500).json({ status: "fail", data: "Internal server error" });
+  }
+});
+
+router.post("/display-experiment", async (req, res) => {
+  try {
+    const { name } = req.body;
+
+    // Check if experiment name is provided
+    if (!name) {
+      return res.status(400).json({
+        status: "fail",
+        data: "Experiment name is required",
+      });
+    }
+
+    // Find the experiment by name
+    const experiment = await Experiment.findOne({ name });
+
+    if (!experiment) {
+      return res.status(404).json({
+        status: "fail",
+        data: "Experiment not found",
+      });
+    }
+
+    // Send the experiment details in the response
+    res.status(200).json({ status: "ok", data: experiment });
+  } catch (error) {
+    console.error("Error displaying experiment:", error);
+    res.status(500).json({ status: "fail", data: "Internal server error" });
+  }
+});
+
 // router.post("/use-experiment", async (req, res) => {
 //   try {
 //     const { expname, batch, date, remark } = req.body;
