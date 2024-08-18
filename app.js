@@ -65,6 +65,9 @@ app.post("/add-reagent", reagentRoutes);
 app.get("/reagents", reagentRoutes);
 app.post("/use-reagent", reagentRoutes);
 app.get("/recently-used-reagents", reagentRoutes);
+app.post("/delete-reagent", reagentRoutes);
+app.post("/edit-reagent", reagentRoutes);
+app.post("/display-reagent", reagentRoutes);
 
 //Experiment routes
 
