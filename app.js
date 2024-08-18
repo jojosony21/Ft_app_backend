@@ -77,6 +77,9 @@ app.get("/getexperiment/:name", experimentRoutes);
 app.post("/use-experiment", experimentRoutes);
 app.get("/chemicals-reagent", commonRoutes);
 app.get("/recently-used-experiments",experimentRoutes);
+app.post("/delete-experiment", experimentRoutes);
+app.post("/edit-experiment", experimentRoutes);
+app.post("/display-experiment", experimentRoutes);
 
 //common routes
 
