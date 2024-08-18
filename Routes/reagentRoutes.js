@@ -81,7 +81,133 @@ router.get("/reagents", async (req, res) => {
     res.status(500).json({ status: "error", message: "Internal server error" });
   }
 });
+//Routes to be included into the app and their is a logical confusion in edit-reagent(is to be solved)
+// Route to delete a reagent
+router.post("/delete-reagent", async (req, res) => {
+  try {
+    const { reagentname } = req.body;
 
+    // Check if reagentname is provided
+    if (!reagentname) {
+      return res.status(400).json({
+        status: "fail",
+        data: "Reagent name is required",
+      });
+    }
+
+    // Find and delete the reagent by name
+    const deleteResult = await Reagent.deleteOne({ reagentname });
+
+    if (deleteResult.deletedCount === 0) {
+      return res.status(404).json({
+        status: "fail",
+        data: "Reagent not found",
+      });
+    }
+
+    // Send success response
+    res
+      .status(200)
+      .json({ status: "ok", data: "Reagent deleted successfully" });
+  } catch (error) {
+    // Handle errors
+    console.error("Error deleting reagent:", error);
+    res.status(500).json({ status: "fail", data: "Internal server error" });
+  }
+});
+router.post("/edit-reagent", async (req, res) => {
+  try {
+    const { reagentname, chemicals } = req.body;
+
+    // Check if reagentname is provided
+    if (!reagentname) {
+      return res.status(400).json({
+        status: "fail",
+        data: "Reagent name is required",
+      });
+    }
+
+    // Find the reagent by name
+    const existingReagent = await Reagent.findOne({ reagentname });
+
+    if (!existingReagent) {
+      return res.status(404).json({
+        status: "fail",
+        data: "Reagent not found",
+      });
+    }
+
+    let totalReagentQuantity = 0; // Initialize total reagent quantity
+    const chemicalObjects = [];
+
+    // If chemicals are provided, update the chemical list and recalculate the total quantity
+    if (chemicals && chemicals.length > 0) {
+      for (const chemical of chemicals) {
+        if (!chemical.chemicalname || !chemical.addquantity) {
+          return res.status(400).json({
+            status: "fail",
+            data: "Chemical name and quantity are required",
+          });
+        }
+
+        // Add each chemical to the list
+        chemicalObjects.push({
+          chemicalname: chemical.chemicalname,
+          quantity: chemical.addquantity,
+        });
+
+        // Add the quantity of each chemical to the total reagent quantity
+        totalReagentQuantity += chemical.addquantity;
+      }
+
+      // Update the chemicals and quantity in the existing reagent
+      existingReagent.chemicals = chemicalObjects;
+      existingReagent.quantity = totalReagentQuantity;
+    }
+
+    // Save the updated reagent
+    await existingReagent.save();
+
+    // Send success response
+    res
+      .status(200)
+      .json({ status: "ok", data: "Reagent updated successfully" });
+  } catch (error) {
+    // Handle errors
+    console.error("Error editing reagent:", error);
+    res.status(500).json({ status: "fail", data: "Internal server error" });
+  }
+});
+router.post("/display-reagent", async (req, res) => {
+  try {
+    const { reagentname } = req.body;
+
+    // Check if reagentname is provided
+    if (!reagentname) {
+      return res.status(400).json({
+        status: "fail",
+        data: "Reagent name is required",
+      });
+    }
+
+    // Find the reagent by name
+    const reagent = await Reagent.findOne({ reagentname });
+
+    if (!reagent) {
+      return res.status(404).json({
+        status: "fail",
+        data: "Reagent not found",
+      });
+    }
+
+    // Send the reagent details in the response
+    res.status(200).json({ status: "ok", data: reagent });
+  } catch (error) {
+    // Handle errors
+    console.error("Error displaying reagent:", error);
+    res.status(500).json({ status: "fail", data: "Internal server error" });
+  }
+});
 // router.post("/use-reagent", async (req, res) => {
 //   const { reagentname, usedquantity, batch, date, remark } = req.body;
 
