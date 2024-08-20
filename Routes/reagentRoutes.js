@@ -117,24 +117,36 @@ router.post("/delete-reagent", async (req, res) => {
 });
 router.post("/edit-reagent", async (req, res) => {
   try {
-    const { reagentname, chemicals } = req.body;
+    const { id, newReagentName, chemicals } = req.body;
 
-    // Check if reagentname is provided
-    if (!reagentname) {
+    // Check if reagent ID is provided
+    if (!id) {
       return res.status(400).json({
         status: "fail",
-        data: "Reagent name is required",
+        data: "Reagent ID is required",
       });
     }
 
-    // Find the reagent by name
-    const existingReagent = await Reagent.findOne({ reagentname });
+    // Find the reagent by ID
+    const existingReagent = await Reagent.findById(id);
 
     if (!existingReagent) {
       return res.status(404).json({
         status: "fail",
         data: "Reagent not found",
       });
+    }
+
+    // Update the reagent name if a new one is provided and does not already exist
+    if (newReagentName) {
+      const duplicateReagent = await Reagent.findOne({ reagentname: newReagentName });
+      if (duplicateReagent) {
+        return res.status(400).json({
+          status: "fail",
+          data: "Reagent with the new name already exists",
+        });
+      }
+      existingReagent.reagentname = newReagentName;
     }
 
     let totalReagentQuantity = 0; // Initialize total reagent quantity
@@ -169,15 +181,20 @@ router.post("/edit-reagent", async (req, res) => {
     await existingReagent.save();
 
     // Send success response
-    res
-      .status(200)
-      .json({ status: "ok", data: "Reagent updated successfully" });
+    res.status(200).json({
+      status: "ok",
+      data: "Reagent updated successfully",
+    });
   } catch (error) {
     // Handle errors
     console.error("Error editing reagent:", error);
-    res.status(500).json({ status: "fail", data: "Internal server error" });
+    res.status(500).json({
+      status: "fail",
+      data: "Internal server error",
+    });
   }
 });
+
 router.post("/display-reagent", async (req, res) => {
   try {
     const { reagentname } = req.body;
