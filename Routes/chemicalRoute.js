@@ -146,27 +146,48 @@ router.post("/delete-chemical", async (req, res) => {
 // Route to edit a chemical
 router.post("/edit-chemical", async (req, res) => {
   try {
-    const { chemicalname, addquantity, expirydate, sellername, sellernum } =
-      req.body;
+    const {
+      id,
+      newChemicalName,
+      addquantity,
+      expirydate,
+      sellername,
+      sellernum,
+    } = req.body;
 
-    // Check if chemicalname is provided
-    if (!chemicalname) {
+    // Check if the chemical ID is provided
+    if (!id) {
       return res.status(400).json({
         status: "fail",
-        data: "Chemical name is required",
+        data: "Chemical ID is required",
       });
     }
 
-    // Find the chemical by name
-    const existingChemical = await Chemical.findOne({ chemicalname });
+    // Find the chemical by ID
+    const existingChemical = await Chemical.findById(id);
 
     if (!existingChemical) {
-      return res
-        .status(404)
-        .json({ status: "fail", data: "Chemical not found" });
+      return res.status(404).json({
+        status: "fail",
+        data: "Chemical not found",
+      });
     }
 
-    // Update the fields if they are provided in the request
+    // Update the chemical name if a new one is provided and does not already exist
+    if (newChemicalName) {
+      const duplicateChemical = await Chemical.findOne({
+        chemicalname: newChemicalName,
+      });
+      if (duplicateChemical) {
+        return res.status(400).json({
+          status: "fail",
+          data: "Chemical with the new name already exists",
+        });
+      }
+      existingChemical.chemicalname = newChemicalName;
+    }
+
+    // Update other fields if they are provided in the request
     if (addquantity !== undefined) {
       existingChemical.addquantity = addquantity;
     }
@@ -184,15 +205,20 @@ router.post("/edit-chemical", async (req, res) => {
     await existingChemical.save();
 
     // Send success response
-    res
-      .status(200)
-      .json({ status: "ok", data: "Chemical updated successfully" });
+    res.status(200).json({
+      status: "ok",
+      data: "Chemical updated successfully",
+    });
   } catch (error) {
     // Handle errors
     console.error("Error editing chemical:", error);
-    res.status(500).json({ status: "fail", data: "Internal server error" });
+    res.status(500).json({
+      status: "fail",
+      data: "Internal server error",
+    });
   }
 });
+
 // Route to display a chemical by name
 router.post("/display-chemical", async (req, res) => {
   try {
