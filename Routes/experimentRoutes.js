@@ -131,18 +131,18 @@ router.post("/delete-experiment", async (req, res) => {
 
 router.post("/edit-experiment", async (req, res) => {
   try {
-    const { name, chemicalsUsed, reagentsUsed } = req.body;
+    const { id, newName, chemicalsUsed, reagentsUsed } = req.body;
 
-    // Check if experiment name is provided
-    if (!name) {
+    // Check if experiment ID is provided
+    if (!id) {
       return res.status(400).json({
         status: "fail",
-        data: "Experiment name is required",
+        data: "Experiment ID is required",
       });
     }
 
-    // Find the existing experiment by name
-    const existingExperiment = await Experiment.findOne({ name });
+    // Find the existing experiment by ID
+    const existingExperiment = await Experiment.findById(id);
 
     if (!existingExperiment) {
       return res.status(404).json({
@@ -151,7 +151,19 @@ router.post("/edit-experiment", async (req, res) => {
       });
     }
 
-    // Update chemicalsUsed and reagentsUsed if provided
+    // Update experiment name if a new one is provided
+    if (newName) {
+      const duplicateExperiment = await Experiment.findOne({ name: newName });
+      if (duplicateExperiment) {
+        return res.status(400).json({
+          status: "fail",
+          data: "Experiment with the new name already exists",
+        });
+      }
+      existingExperiment.name = newName;
+    }
+
+    // Update chemicalsUsed if provided and is an array
     if (chemicalsUsed && Array.isArray(chemicalsUsed)) {
       existingExperiment.chemicalsUsed = chemicalsUsed.map((chemical) => ({
         chemicalName: chemical.chemicalname,
@@ -159,6 +171,7 @@ router.post("/edit-experiment", async (req, res) => {
       }));
     }
 
+    // Update reagentsUsed if provided and is an array
     if (reagentsUsed && Array.isArray(reagentsUsed)) {
       existingExperiment.reagentsUsed = reagentsUsed.map((reagent) => ({
         reagentName: reagent.reagentname,
@@ -170,12 +183,16 @@ router.post("/edit-experiment", async (req, res) => {
     await existingExperiment.save();
 
     // Send success response
-    res
-      .status(200)
-      .json({ status: "ok", data: "Experiment updated successfully" });
+    res.status(200).json({
+      status: "ok",
+      data: "Experiment updated successfully",
+    });
   } catch (error) {
     console.error("Error editing experiment:", error);
-    res.status(500).json({ status: "fail", data: "Internal server error" });
+    res.status(500).json({
+      status: "fail",
+      data: "Internal server error",
+    });
   }
 });
 
