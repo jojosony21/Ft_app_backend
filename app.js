@@ -3,7 +3,7 @@ const app = express();
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const cron = require("node-cron");
-const cron = require("cors");
+const cors = require("cors");
 
 app.use(bodyParser.json());
 app.use(express.json());
